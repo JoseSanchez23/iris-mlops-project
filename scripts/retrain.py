@@ -6,7 +6,7 @@ import joblib
 
 #Se cargan los datos
 columns = ["sepal_length", "sepal_width", "petal_length", "petal_width", "species"]
-df = pd.read_csv("data/data.iris", header=None, names=columns)
+df = pd.read_csv("data/iris.csv", header=None, names=columns)
 
 X = df.drop("species", axis=1)
 y = df["species"]
