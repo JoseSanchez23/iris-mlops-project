@@ -1,0 +1,35 @@
+name: Reentrenar Modelo
+
+on:
+  workflow_dispatch:  # Permite ejecutar manualmente
+  schedule:
+    - cron: '0 0 1 * *'  # Programado para ejecutarse el primer día de cada mes
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Retrain model
+        run: |
+          mkdir -p data models
+          python scripts/retrain.py
+
+      - name: Commit updated model
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add models/iris_model.pkl models/scaler.pkl
+          git commit -m "Actualizar modelo automáticamente" || echo "No changes to commit"
+          git push

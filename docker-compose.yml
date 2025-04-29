@@ -1,0 +1,134 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: iris-mlops-api
+    container_name: iris-mlops-api
+    expose:
+      - "8000"
+    volumes:
+      - ./models:/app/models
+    environment:
+      - MODEL_PATH=/app/models/iris_model.pkl
+      - SCALER_PATH=/app/models/scaler.pkl
+      - PORT=8000
+      - ENVIRONMENT=production
+    restart: always
+    networks:
+      - iris-network
+    depends_on:
+      - init-data
+
+  nginx:
+    image: nginx:1.21-alpine
+    container_name: iris-mlops-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+    restart: always
+    networks:
+      - iris-network
+    depends_on:
+      - api
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: iris-mlops-streamlit
+    container_name: iris-mlops-streamlit
+    ports:
+      - "8501:8501"
+    command: streamlit run streamlit_app.py
+    networks:
+      - iris-network
+    depends_on:
+      - api
+
+  retrain-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: iris-mlops-scheduler
+    container_name: iris-mlops-scheduler
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./logs:/app/logs
+    command: python scripts/retrain.py
+    networks:
+      - iris-network
+    depends_on:
+      - init-data
+
+  init-data:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: iris-mlops-init
+    container_name: iris-mlops-init
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./logs:/app/logs
+    command: >
+      sh -c "
+        python -c '
+        import os
+        import pandas as pd
+        from sklearn.model_selection import train_test_split
+        from sklearn.ensemble import RandomForestClassifier
+        from sklearn.preprocessing import StandardScaler
+        import joblib
+        
+        os.makedirs(\"logs\", exist_ok=True)
+        os.makedirs(\"models\", exist_ok=True)
+        os.makedirs(\"data\", exist_ok=True)
+        
+        if not os.path.exists(\"models/iris_model.pkl\") or not os.path.exists(\"models/scaler.pkl\"):
+            print(\"Inicializando modelo y scaler...\")
+            
+            # Verificar si existe el archivo de datos
+            if not os.path.exists(\"data/iris.csv\"):
+                print(\"Descargando datos...\")
+                # Descargar datos si no existen
+                url = \"https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data\"
+                columns = [\"sepal_length\", \"sepal_width\", \"petal_length\", \"petal_width\", \"species\"]
+                df = pd.read_csv(url, header=None, names=columns)
+                df.to_csv(\"data/iris.csv\", index=False)
+            else:
+                columns = [\"sepal_length\", \"sepal_width\", \"petal_length\", \"petal_width\", \"species\"]
+                df = pd.read_csv(\"data/iris.csv\", header=None, names=columns)
+            
+            X = df.drop(\"species\", axis=1)
+            y = df[\"species\"]
+            
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+            
+            scaler = StandardScaler()
+            X_train_scaled = scaler.fit_transform(X_train)
+            
+            model = RandomForestClassifier(n_estimators=100, random_state=42)
+            model.fit(X_train_scaled, y_train)
+            
+            joblib.dump(model, \"models/iris_model.pkl\")
+            joblib.dump(scaler, \"models/scaler.pkl\")
+            
+            print(\"Modelo y scaler inicializados correctamente.\")
+        else:
+            print(\"El modelo y scaler ya existen. No es necesario inicializarlos.\")
+        '
+      "
+    networks:
+      - iris-network
+
+networks:
+  iris-network:
+    driver: bridge
