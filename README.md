@@ -1,67 +1,86 @@
-Proyecto MLOps - Clasificación de Iris
+# Proyecto MLOps - Clasificación de Iris
+
 Este proyecto implementa un sistema de clasificación de especies de flores Iris utilizando machine learning, siguiendo un enfoque de MLOps completo y moderno.
 
-Integrantes del Equipo y Roles
-Científico de Datos
-Responsable: Jose Ignacio Sánchez
+## Integrantes del Equipo y Roles
 
-Desarrollo y exploración de datos
-Entrenamiento y evaluación del modelo de machine learning
-Ingeniera MLOps
-Responsable: Ariana Víquez Solano
+**Científico de Datos**  
+_Responsable_: Jose Ignacio Sánchez  
+- Desarrollo y exploración de datos  
+- Entrenamiento y evaluación del modelo de machine learning
 
-Versionamiento de datos y modelos con DVC
-Integración de almacenamiento remoto en AWS S3
-Contenerización con Docker
-Documentación del flujo reproducible
-Base para CI/CD
-Ingeniera de Software
-Responsable: Maria Fernanda Moroney Sole
+**Ingeniera MLOps**  
+_Responsable_: Ariana Víquez Solano  
+- Versionamiento de datos y modelos con **DVC**  
+- Integración de almacenamiento remoto en **AWS S3**  
+- Contenerización con **Docker**  
+- Documentación del flujo reproducible  
+- Base para CI/CD
 
-Desarrollo de la API (FastAPI)
-Interfaz web (Streamlit)
-CI/CD con GitHub Actions
-Despliegue en AWS EC2
-Documentación técnica
-Descripción del Proyecto
+**Ingeniera de Software**  
+_Responsable_: Maria Fernanda Moroney Sole  
+- Desarrollo de la API (**FastAPI**)  
+- Interfaz web (**Streamlit**)  
+- CI/CD con **GitHub Actions**  
+- Despliegue en **AWS EC2**  
+- Documentación técnica
+
+---
+
+## Descripción del Proyecto
+
 Se utiliza el dataset clásico de Iris para clasificar flores en tres especies (setosa, versicolor, virginica) a partir de cuatro características morfológicas.
 
-Tecnologías Utilizadas
-Python
-Random Forest (modelo ML)
-FastAPI (API)
-Streamlit (UI)
-Docker & Docker Compose
-Git & GitHub
-DVC (versionamiento de datos/modelos)
-AWS S3 (s3://iris-mlops-project/iris-mlops/)
-GitHub Actions (CI/CD)
-AWS EC2 (i-0adbb2e8fbf50c4e5)
-Estructura del Proyecto
+---
+
+## Tecnologías Utilizadas
+
+- **Python**
+- **Random Forest** (modelo ML)
+- **FastAPI** (API)
+- **Streamlit** (UI)
+- **Docker & Docker Compose**
+- **Git & GitHub**
+- **DVC** (versionamiento de datos/modelos)
+- **AWS S3** (`s3://iris-mlops-project/iris-mlops/`)
+- **GitHub Actions** (CI/CD)
+- **AWS EC2** (`i-0adbb2e8fbf50c4e5`)
+
+---
+
+## Estructura del Proyecto
+
 iris-mlops-project/
-├── .github/workflows/    # Workflows de GitHub Actions
-├── api/                  # Código de la API (FastAPI)
-├── data/                 # Datos (versionados con DVC)
-├── models/               # Modelos entrenados (versionados con DVC)
-├── notebooks/            # Jupyter notebooks
-│   └── iris_model_dev.ipynb
-├── scripts/              # Scripts utilitarios
-│   └── retrain.py
-├── tests/                # Pruebas unitarias
-├── .dvc/                 # Configuración de DVC
+├── .github/workflows/ # Workflows de GitHub Actions
+├── api/ # Código de la API (FastAPI)
+├── data/ # Datos (versionados con DVC)
+├── models/ # Modelos entrenados (versionados con DVC)
+├── notebooks/ # Jupyter notebooks
+│ └── iris_model_dev.ipynb
+├── scripts/ # Scripts utilitarios
+│ └── retrain.py
+├── tests/ # Pruebas unitarias
+├── .dvc/ # Configuración de DVC
 ├── docker-compose.yml
 ├── Dockerfile
 ├── requirements.txt
 └── streamlit_app.py
-Instrucciones de Ejecución
-Requisitos Previos
-Python 3.9+
-Docker y Docker Compose
-Git
-AWS CLI (opcional, para acceso a S3)
-Clonar el Repositorio
-bash
-Copy Code
+
+
+---
+
+## Instrucciones de Ejecución
+
+### Requisitos Previos
+
+- Python 3.9+
+- Docker y Docker Compose
+- Git
+- AWS CLI (opcional, para acceso a S3)
+
+### Clonar el Repositorio
+
+```bash
 git clone https://github.com/JoseSanchez23/iris-mlops-project.git
 cd iris-mlops-project
 Configuración del Entorno Local
@@ -170,6 +189,9 @@ Docs: http://18.117.151.103:8000/docs
 Web: http://18.117.151.103:8501
 Instancia EC2: i-0adbb2e8fbf50c4e5
 Bucket S3: s3://iris-mlops-project/iris-mlops/
+
+Licencia
+MIT
 
 Licencia
 MIT
